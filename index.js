@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.get("/bitcoin", async (req, res) => {
+app.get("/price", async (req, res) => {
   const key = process.env.API_KEY;
   const response = await axios.get(
     "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
@@ -23,8 +23,8 @@ app.get("/bitcoin", async (req, res) => {
       },
     }
   );
-  const bitcoin = response.data.data.find((coin) => coin.symbol === "BTC");
-  res.send(`Bitcoin is currently worth $${bitcoin.quote.USD.price}`);
+  const result = response.data.data.find((coin) => coin.symbol === "BTC");
+  res.send(`${result.name} is currently worth $${result.quote.USD.price} USD`);
 });
 
 app.listen(PORT, (err) => {
