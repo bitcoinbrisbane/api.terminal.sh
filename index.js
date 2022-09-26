@@ -44,29 +44,32 @@ app.get("/balance/:address", async (req, res) => {
 });
 
 app.get("/balance/:address/:token", async (req, res) => {
-    const address = req.params.address;
+  const address = req.params.address;
 
-    // let tokens = await cache.get("tokens");
-    // if (!tokens) {
-    //     tokens = await axios.get("https://tokens.coingecko.com/uniswap/all.json");
-    //     cache.put("tokens", tokens, 1000 * 60 * 60);
-    // }
+  // let tokens = await cache.get("tokens");
+  // if (!tokens) {
+  //     tokens = await axios.get("https://tokens.coingecko.com/uniswap/all.json");
+  //     cache.put("tokens", tokens, 1000 * 60 * 60);
+  // }
 
-    // const token = tokens.data.tokens.find(token => token.symbol === req.params.token.toUpperCase());
-    // const token_balance = await axios.get(`https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${token.address}&address=${address}&tag=latest&apikey=${process.env.ETHERSCAN_API_KEY}`);  
-    
-    const user_tokens = await axios.get(`https://api.etherscan.io/api?module=account&action=addresstokenbalance&address=${address}&apikey=${process.env.ETHERSCAN_API_KEY}`);
-    const token = user_tokens.data.result.find((token) => token.TokenSymbol === req.params.token.toUpperCase());
+  // const token = tokens.data.tokens.find(token => token.symbol === req.params.token.toUpperCase());
+  // const token_balance = await axios.get(`https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${token.address}&address=${address}&tag=latest&apikey=${process.env.ETHERSCAN_API_KEY}`);
 
+  const user_tokens = await axios.get(
+    `https://api.etherscan.io/api?module=account&action=addresstokenbalance&address=${address}&apikey=${process.env.ETHERSCAN_API_KEY}`
+  );
+  const token = user_tokens.data.result.find(
+    (token) => token.TokenSymbol === req.params.token.toUpperCase()
+  );
 
-    // const response = await axios.get(
-    //   `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${process.env.ETHERSCAN_API_KEY}`
-    // );
-  
-    const balance = ethers.utils.formatEther(token.TokenQuantity);
-  
-    res.send(`ETH balance for ${address} is ${balance}`);
-  });
+  // const response = await axios.get(
+  //   `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${process.env.ETHERSCAN_API_KEY}`
+  // );
+
+  const balance = ethers.utils.formatEther(token.TokenQuantity);
+
+  res.send(`ETH balance for ${address} is ${balance}`);
+});
 
 app.listen(PORT, (err) => {
   if (err) console.log(err);
