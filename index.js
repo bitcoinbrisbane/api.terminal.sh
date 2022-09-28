@@ -18,17 +18,24 @@ app.get("/", (req, res) => {
 app.get("/price/:symbol", async (req, res) => {
   const key = process.env.API_KEY;
   const symbol = req.params.symbol;
-  const response = await axios.get(
-    "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
-    {
-      headers: {
-        "X-CMC_PRO_API_KEY": key,
-      },
-    }
-  );
-  const result = response.data.data.find(
-    (coin) => coin.symbol === symbol.toUpperCase()
-  );
+  let result = cache.get(symbol);
+
+  if (!result) {
+    const response = await axios.get(
+      "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest",
+      {
+        headers: {
+          "X-CMC_PRO_API_KEY": key,
+        },
+      }
+    );
+
+    result = response.data.data.find(
+      (coin) => coin.symbol === symbol.toUpperCase()
+    );
+    cache.put(symbol, result, 1000 * 60);
+  }
+
   res.send(`${result.name} is currently worth $${result.quote.USD.price} USD`);
 });
 
